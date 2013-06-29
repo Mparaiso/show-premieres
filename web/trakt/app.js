@@ -3,14 +3,16 @@ var MainController, trakt;
 
 trakt = angular.module("trakt", []);
 
-MainController = function($scope, $http) {
+MainController = function($scope, $http, $timeout) {
   angular.extend($scope, {
     apiKey: "53a8e19b109858453b16650b1ede8a7f",
     results: [],
+    filteredShows: [],
     availableGenres: [],
     filterText: null,
     genreFilter: null,
     networkFilter: null,
+    filteredGenres: [],
     orderFields: [
       {
         label: 'Air Date',
@@ -24,8 +26,26 @@ MainController = function($scope, $http) {
       }
     ],
     orderDirections: ["Descending", "Ascending"],
-    orderReverse: false
+    orderReverse: false,
+    emptyMessage: "Loading TV shows please wait..."
   });
+  $scope.$watch("filteredShows.length", function() {
+    var res;
+    res = $scope.filteredShows.reduce(function(prev, current, i, arr) {
+      return prev.concat(current.show.genres.filter((function(genre) {
+        return genre.trim().length > 1 && prev.indexOf(genre) < 0;
+      })));
+    }, []).sort();
+    $scope.availableGenres = res;
+    if ($scope.availableGenres.indexOf($scope.genreFilter) < 0) {
+      return $timeout((function() {
+        return $scope.genreFilter = null;
+      }), 0);
+    }
+  }, false);
+  $scope.selectNetwork = function(network) {
+    return $scope.networkFilter = network;
+  };
   $scope.selectGenre = function(genre) {
     return $scope.genreFilter = genre;
   };
@@ -33,19 +53,12 @@ MainController = function($scope, $http) {
     var apiDate, today, url;
     today = new Date;
     apiDate = today.getFullYear() + ("0" + (today.getMonth() + 1)).slice(-2) + "" + ("0" + today.getDate()).slice(-2);
-    url = 'http://api.trakt.tv/calendar/premieres.json/' + $scope.apiKey + '/' + apiDate + '/' + 90 + '/?callback=JSON_CALLBACK';
+    url = 'http://api.trakt.tv/calendar/premieres.json/' + $scope.apiKey + '/' + apiDate + '/' + 100 + '/?callback=JSON_CALLBACK';
     return $http.jsonp(url).success(function(data) {
       $scope.results = data.reduce(function(prev, current, i, arr) {
         return prev.concat(current.episodes.map(function(value) {
           value.date = arr[i].date;
           return value;
-        }));
-      }, []);
-      $scope.availableGenres = $scope.results.reduce(function(prev, current, index, arr) {
-        return prev.concat(current.show.genres.filter(function(el) {
-          if (prev.indexOf(el) < 0) {
-            return el;
-          }
         }));
       }, []);
       console.log($scope.availableGenres);
@@ -56,7 +69,9 @@ MainController = function($scope, $http) {
         }
         return prev;
       }, []).sort();
-    }).error(function(error) {});
+    }).error(error(function() {
+      return $scope.emptyMessage = "Loading TV shows failed , please refresh the page.";
+    }));
   };
 };
 
