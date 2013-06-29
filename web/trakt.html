@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en-US" data-ng-app="trakt">
+<head>
+    <meta charset="UTF-8">
+    <title>Trakt API exemple</title>
+</head>
+<body data-ng-controller="MainController" data-ng-init="init()" data-ng-cloak>
+<div class="navbar">
+    <div class="navbar-inner navbar-fixed-top">
+        <a class="brand" href="#">Show Premieres with Trakt API</a>
+        <div class="span1"><label class="navbar-text"><b>Search:</b></label></div>
+        <div class="span3"><input type="text" class="input-block-level navbar-search" data-ng-model="filterText"/></div>
+        <div class="span2 navbar-text">
+            <div class="pull-left">Genre : &nbsp;</div>
+            <select class="input-small navbar-search" id="genre"
+                    data-ng-model="genreFilter"
+                    data-ng-options="label for label in availableGenres">
+                <option value="">All</option>
+            </select>
+        </div>
+        <div class="span3 navbar-text">
+            <div class="pull-left">Order by: &nbsp;</div>
+            <select data-ng-model="orderField"
+                    data-ng-options="f.value as f.label for f in orderFields" class="navbar-search input-small"></select>
+            <select data-ng-model="orderReverse" class="navbar-search input-small">
+                <option value="true">Descending</option>
+                <option value="false">Ascending</option>
+            </select>
+        </div>
+    </div>
+</div>
+<div class="container" style="margin-top:70px;">
+    <div class="row">
+        <ul class="unstyled"
+            data-ng-repeat="show in results|filter:filterText|filter:{show.genres:genreFilter}|orderBy:orderField:orderReverse">
+            <li>
+                <div class="row">
+                    <div class="span3">
+                        <img data-ng-src="{{show.episode.images.screen}}" alt=""/>
+                                    
+                        <div class="ratings"><strong>Ratings:</strong> <span class="label"><i
+                                class="icon-thumbs-up"></i> {{show.episode.ratings.loved}}</span> <span class="label"><i
+                                class="icon-thumbs-down"></i> {{show.episode.ratings.hated}}</span> <span
+                                class="label label-important"
+                                ng-class="{'label-success': show.episode.ratings.percentage >= 50}"><strong>%</strong> {{show.episode.ratings.percentage}}
+                        </div>
+
+                    </div>
+                    <div class="span6">
+                        <h3>{{show.show.title}}: {{show.episode.title}}</h3>
+
+                        <p>{{show.episode.overview}}</p>
+                    </div>
+                    <div class="span3">
+                        <div class="fulldate pull-right label label-info">{{show.date}}</div>
+                        <ul class="show-info unstyled">
+                            <li><strong>On Air:</strong> {{show.show.air_day}} {{show.show.air_time}}</li>
+                            <li><strong>Network:</strong> {{show.show.network}}</li>
+                            <li><strong>Season #:</strong> {{show.episode.season}}</li>
+                            <li><strong>Genres:</strong> <a class="label label-inverse genre" style="margin-right:5px;"
+                                                            data-ng-repeat="genre in show.show.genres"
+                                                            data-ng-click="selectGenre(genre)"
+                                    >{{genre}}</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <hr>
+            </li>
+        </ul>
+    </div>
+</div>
+<div class="container">
+    <div class="row text-center">
+        &copy;  <a href="https://github.com/Mparaiso">mparaiso</a> <a href="mailto:mparaiso@online.fr">mparaiso@oneline.fr</a>
+    </div>
+</div>
+<script type="text/javascript" src="/vendor/underscore-min.js"></script>
+<script type="text/javascript" src="/vendor/jquery.min.js"></script>
+<script type="text/javascript" src="/vendor/angular.js"></script>
+<script type="text/javascript" src="/trakt/app.js"></script>
+<link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css"/>
+<link rel="stylesheet" href="/bootstrap/css/bootstrap-responsive.min.css"/>
+</body>
+</html>
