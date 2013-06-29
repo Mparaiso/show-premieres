@@ -7,7 +7,8 @@ MainController = ($scope, $http)->
         availableGenres:[]
         filterText:null
         genreFilter:null
-        orderFields:[{label:'Air Date',value:"episode.first_aired"},{label:'Rating',value:'episode.ratings.percentage'}]
+        networkFilter:null
+        orderFields:[{label:'Air Date',value:"episode.first_aired"},{label:'Rating',value:'episode.ratings.percentage'},{label:"Network",value:"show.network"}]
         orderDirections:["Descending","Ascending"]
         orderReverse:false
     })
@@ -20,7 +21,7 @@ MainController = ($scope, $http)->
         today = new Date
         apiDate = today.getFullYear() + ("0" + (today.getMonth() + 1))
             .slice(-2) + "" + ("0" + today.getDate()).slice(-2)
-        url ='http://api.trakt.tv/calendar/premieres.json/' + $scope.apiKey + '/' + apiDate + '/' + 30 + '/?callback=JSON_CALLBACK'
+        url ='http://api.trakt.tv/calendar/premieres.json/' + $scope.apiKey + '/' + apiDate + '/' + 90 + '/?callback=JSON_CALLBACK'
         $http.jsonp(url)
             .success((data)->
                 $scope.results = data.reduce((prev, current,i,arr)->
@@ -31,5 +32,12 @@ MainController = ($scope, $http)->
                   prev.concat(current.show.genres.filter((el)->el if prev.indexOf(el)<0 ))
                 ,[])
                 console.log( $scope.availableGenres)
+                console.log( $scope.results)
+
+                $scope.networks = $scope.results.reduce((prev,current,index,arr)->
+                    prev.push(current.show.network) if current.show.network.trim().length > 1 and prev.indexOf(current.show.network)<0
+                    return prev
+                ,[]).sort()
+                return
 
             ).error((error)->)

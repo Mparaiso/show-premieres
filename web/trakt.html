@@ -2,37 +2,61 @@
 <html lang="en-US" data-ng-app="trakt">
 <head>
     <meta charset="UTF-8">
-    <title>Trakt API exemple</title>
+    <title>Show Premieres !</title>
+    <meta name="description" content="TV show premieres">
+    <meta name="author" content="mparaiso">
 </head>
 <body data-ng-controller="MainController" data-ng-init="init()" data-ng-cloak>
 <div class="navbar">
     <div class="navbar-inner navbar-fixed-top">
-        <a class="brand" href="#">Show Premieres with Trakt API</a>
-        <div class="span1"><label class="navbar-text"><b>Search:</b></label></div>
-        <div class="span3"><input type="text" class="input-block-level navbar-search" data-ng-model="filterText"/></div>
-        <div class="span2 navbar-text">
-            <div class="pull-left">Genre : &nbsp;</div>
-            <select class="input-small navbar-search" id="genre"
-                    data-ng-model="genreFilter"
-                    data-ng-options="label for label in availableGenres">
-                <option value="">All</option>
-            </select>
-        </div>
-        <div class="span3 navbar-text">
-            <div class="pull-left">Order by: &nbsp;</div>
-            <select data-ng-model="orderField"
-                    data-ng-options="f.value as f.label for f in orderFields" class="navbar-search input-small"></select>
-            <select data-ng-model="orderReverse" class="navbar-search input-small">
-                <option value="true">Descending</option>
-                <option value="false">Ascending</option>
-            </select>
-        </div>
+        <a class="brand" href="/">Show Premieres !</a>
+        <ul class="nav">
+            <li>
+                <input type="text" placeholder="Search" class="input-xlarge navbar-search data-ng-model="filterText" />
+            </li>
+            <li>
+                <div class="navbar-text"> &nbsp; Genre : &nbsp;</div>
+            </li>
+            <li>
+                <select class="input-small navbar-search" id="genre"
+                        data-ng-model="genreFilter"
+                        data-ng-options="label for label in availableGenres">
+                    <option value="">All</option>
+                </select>
+            </li>
+            <li>
+                <div class="navbar-text">
+                    &nbsp; Network: &nbsp;
+                </div>
+            </li>
+            <li>
+                <select data-ng-model="networkFilter" class="input-small navbar-search"
+                        data-ng-options="network for network in networks">
+                    <option value="">All</option>
+                </select>
+
+            </li>
+            <li>
+                <div class="navbar-text">
+                  &nbsp;  Order by: &nbsp;
+                </div>
+            </li>
+            <li>
+                <select data-ng-model="orderField"
+                        data-ng-options="f.value as f.label for f in orderFields"
+                        class=" input-small navbar-search"></select>
+                <select data-ng-model="orderReverse" class="input-small navbar-search">
+                    <option value="true">Descending</option>
+                    <option value="false">Ascending</option>
+                </select>
+            </li>
+        </ul>
     </div>
 </div>
 <div class="container" style="margin-top:70px;">
     <div class="row">
         <ul class="unstyled"
-            data-ng-repeat="show in results|filter:filterText|filter:{show.genres:genreFilter}|orderBy:orderField:orderReverse">
+            data-ng-repeat="show in results|filter:filterText|filter:{show.genres:genreFilter}|filter:{show.network:networkFilter}|orderBy:orderField:orderReverse">
             <li>
                 <div class="row">
                     <div class="span3">
@@ -49,7 +73,7 @@
                     <div class="span6">
                         <h3>{{show.show.title}}: {{show.episode.title}}</h3>
 
-                        <p>{{show.episode.overview}}</p>
+                        <p>{{show.show.overview}}</p>
                     </div>
                     <div class="span3">
                         <div class="fulldate pull-right label label-info">{{show.date}}</div>
@@ -72,7 +96,7 @@
 </div>
 <div class="container">
     <div class="row text-center">
-        &copy;  <a href="https://github.com/Mparaiso">mparaiso</a> <a href="mailto:mparaiso@online.fr">mparaiso@oneline.fr</a>
+        &copy; <a href="https://github.com/Mparaiso">mparaiso</a> <a href="mailto:mparaiso@online.fr">mparaiso@oneline.fr</a>
     </div>
 </div>
 <script type="text/javascript" src="/vendor/underscore-min.js"></script>
@@ -81,5 +105,13 @@
 <script type="text/javascript" src="/trakt/app.js"></script>
 <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css"/>
 <link rel="stylesheet" href="/bootstrap/css/bootstrap-responsive.min.css"/>
+<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,600,700' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700' rel='stylesheet' type='text/css'>
+
+<style type="text/css">
+    body {
+        font-family: 'Ubuntu', 'Open Sans', sans-serif;
+    }
+</style>
 </body>
 </html>

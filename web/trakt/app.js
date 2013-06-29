@@ -10,6 +10,7 @@ MainController = function($scope, $http) {
     availableGenres: [],
     filterText: null,
     genreFilter: null,
+    networkFilter: null,
     orderFields: [
       {
         label: 'Air Date',
@@ -17,6 +18,9 @@ MainController = function($scope, $http) {
       }, {
         label: 'Rating',
         value: 'episode.ratings.percentage'
+      }, {
+        label: "Network",
+        value: "show.network"
       }
     ],
     orderDirections: ["Descending", "Ascending"],
@@ -29,7 +33,7 @@ MainController = function($scope, $http) {
     var apiDate, today, url;
     today = new Date;
     apiDate = today.getFullYear() + ("0" + (today.getMonth() + 1)).slice(-2) + "" + ("0" + today.getDate()).slice(-2);
-    url = 'http://api.trakt.tv/calendar/premieres.json/' + $scope.apiKey + '/' + apiDate + '/' + 30 + '/?callback=JSON_CALLBACK';
+    url = 'http://api.trakt.tv/calendar/premieres.json/' + $scope.apiKey + '/' + apiDate + '/' + 90 + '/?callback=JSON_CALLBACK';
     return $http.jsonp(url).success(function(data) {
       $scope.results = data.reduce(function(prev, current, i, arr) {
         return prev.concat(current.episodes.map(function(value) {
@@ -44,7 +48,14 @@ MainController = function($scope, $http) {
           }
         }));
       }, []);
-      return console.log($scope.availableGenres);
+      console.log($scope.availableGenres);
+      console.log($scope.results);
+      $scope.networks = $scope.results.reduce(function(prev, current, index, arr) {
+        if (current.show.network.trim().length > 1 && prev.indexOf(current.show.network) < 0) {
+          prev.push(current.show.network);
+        }
+        return prev;
+      }, []).sort();
     }).error(function(error) {});
   };
 };
